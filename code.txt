@@ -1,0 +1,240 @@
+CODE 1- 
+
+#include<iostream>
+#include<fstream>
+#include<string>
+#include<conio.h>
+using namespace std ;
+
+void First_Task(string &sentence){
+    string input_password ;
+    cout<<"ENter The Password : ";
+    cin>>input_password ;
+    if(input_password == sentence){
+        cout<<"Password Matched"<<endl;
+    }else{
+        cout<<"Password is Incorrect"<<endl ;
+    }
+}
+
+void Second_Task(string sentence){
+    string password ;
+    char ch ;
+    cout<<"Enter Password : ";
+    while(true){
+        ch = _getch() ;
+
+        if(ch == 13 ){ 
+            break ;
+        }else if(ch == 8){
+            //back space
+            if(!password.empty()){
+                password.pop_back() ;
+                cout<<"\b \b" ;
+            }
+        }else{
+            password.push_back(ch) ;
+            cout<<"*" ;
+        }
+    }
+    cout<<"Entered Pasword : "<<password<<endl ;
+    cout<<endl;
+}
+
+void Third_task()
+{
+    string pass;
+    cout<<"Enter The password: ";
+    cin>>pass;
+    cout<<"Password Entered is: "<<pass;
+}
+
+int main(){
+    ifstream file("password.txt") ;
+
+    if(!file.is_open()){
+        cout<<"Error in Opening File : "<<endl ;
+        return 0 ;
+    }
+
+    string sentence ;
+    getline(file,sentence) ;
+    cout<<"Password is :"<<sentence<<endl ;
+    //First task 
+    First_Task(sentence) ;
+    Second_Task(sentence) ;
+    Third_task() ;
+    return 0 ;
+}
+
+------------------------------------------------------------------------------------------------------------------
+CODE 2- 
+
+    #include <iostream>
+    #include <vector>
+    #include <string>
+    #include <algorithm> // for sort
+    using namespace std;
+
+    string encrypt(string key, string plain_text) {
+        int key_len = key.length();
+        int pt_len = plain_text.length();
+
+        // Step 1: Count rows correctly
+        int rows = (pt_len + key_len - 1) / key_len + 1;
+
+        // Step 2: Create grid (including key row)
+        vector<string> grid(rows, string(key_len, ' '));
+
+        // First row is the key
+        grid[0] = key;
+
+        // Step 3: Fill the grid with plain text
+        int index = 0;
+        for (int r = 1; r < rows; r++) {
+            for (int c = 0; c < key_len && index < pt_len; c++) {
+                grid[r][c] = plain_text[index++];
+            }
+        }
+
+        // Step 4: Sort the key to decide column order
+        string sorted_key = key;
+        sort(sorted_key.begin(), sorted_key.end());
+
+        // Step 5: Generate Cipher Text
+        string cipher;
+        for (char ch : sorted_key) {
+            // Important: Use a loop in case of repeated characters in key
+            for (int i = 0; i < key_len; i++) {
+                if (key[i] == ch) {
+                    for (int r = 1; r < rows; r++) {
+                        cipher += grid[r][i];
+                    }
+                    // Mark column used to avoid duplicate usage if character repeats
+                    key[i] = '\0';
+                    break;
+                }
+            }
+        }
+        cout<<"Printing MAtrix : "<<endl ;
+        for(auto i : grid){
+            for(auto j : i){
+                cout<<j<<" ";
+            }
+            cout<<endl ;
+        }
+
+        return cipher;
+    }
+
+    string decrypt(string key,string cipher){
+        int key_len = key.length() ;
+        int cipher_len = cipher.length() ;
+        
+        int rows = (key_len + cipher_len -1)/key_len + 1 ;
+        
+        vector<string>grid(rows,string(key_len,' ')) ;
+        
+        string sorted_key = key ;
+        
+        sort(sorted_key.begin(),sorted_key.end()) ;
+        int index = 0 ; 
+        for(char ch : sorted_key){
+            for(int i = 0 ; i < key_len ; i++){
+                if(key[i] == ch){
+                    for(int r = 1 ; r < rows && index < cipher_len; r++){
+                        grid[r][i] = cipher[index++] ;
+                    }
+                    key[i] = '\0' ;
+                    break ;
+                }
+            }
+        }
+        string plain_text  ;
+        for(int r = 1 ; r < rows ; r++ ){
+            for(int c = 0 ; c < key_len ; c++)
+            {
+                plain_text += grid[r][c] ;
+            }
+        }
+        return plain_text ;
+    }
+
+    int main() {
+        string key = "MEGABUCK";
+        string plain_text = "please transfer one million dollars to my swiss bank account six two two four";
+
+        cout << "KEY : " << key << endl;
+        cout << "Plain Text : " << plain_text << endl;
+
+        string encrypted_text = encrypt(key, plain_text);
+        cout << "Encrypted Text : " << encrypted_text << endl;
+        string decrypted_text = decrypt(key,encrypted_text) ;
+        cout<<"Decrypted Text : "<<decrypted_text<<endl ;
+        return 0;
+    }
+
+------------------------------------------------------------------------------------------------------------------
+CODE 3- 
+
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+string encryption(string Name, int key)
+{
+for(int i=0;i<Name.length();i++)
+{
+Name[i] += key;
+}
+return Name;
+}
+string decryption(string Name, int key)
+{
+for(int i=0;i<Name.length();i++)
+{
+Name[i] -= key;
+}
+return Name;
+}
+string Caesar_encryption(string Name, int key)
+{
+for(int i=0;i<Name.length();i++)
+{
+int num = Name[i] -'a';
+num = (num+key)%26 +'a';
+Name[i] = char(num);
+}
+return Name;
+}
+string Caesar_decryption(string Name, int key)
+{
+for(int i=0;i<Name.length();i++)
+{
+int num = Name[i] -'a';
+num = (num-key)%26 +'a';
+Name[i] = char(num);
+}
+return Name;
+}
+int main() {
+ ifstream file("Data.txt"); // Open the file
+ if (!file.is_open()) {
+ cerr << "Failed to open the file." << endl;
+ return 1; // Exit if file cannot be opened
+ }
+ string sentence;
+ getline(file, sentence); // Read the first sentence/line from the file
+ //cout << "The sentence is: " << sentence << endl;
+
+ int key;
+ cout<<"Enter Key";
+ cin>>key;
+cout << "The Original Text is: " << sentence << endl;
+ string encrypted = Caesar_encryption(sentence,key);
+cout<<"The Encrypted Text is : "<<encrypted<< endl;
+string decrypted = Caesar_decryption(encrypted,key);
+cout<<"The Encrypted Text is : "<<decrypted<< endl;
+ file.close(); // Close the file
+ return 0;
+}
